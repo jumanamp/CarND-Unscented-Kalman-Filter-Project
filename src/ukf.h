@@ -67,6 +67,12 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
+  ///* Variables for NIS values for sensors
+  double NIS_laser_;
+  double NIS_radar_;
+
+  // Time stamp
+  long long timestamp_;
 
   /**
    * Constructor
