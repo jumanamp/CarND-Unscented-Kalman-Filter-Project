@@ -100,7 +100,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
         * Remember: you'll need to convert radar from polar to cartesian coordinates.
       */
       // 1. initialize the state vector
-      x_ << 1, 1, 1, 0.5, 0;
+      x_ << 0.0, 0.0, 0.0, 0.0, 0.0;
 
       // 2. initialize the state covariance matrix
       P_ << 0.15, 0, 0, 0, 0,
@@ -174,30 +174,8 @@ void UKF::Prediction(double delta_t) {
   Complete this function! Estimate the object's location. Modify the state
   vector, x_. Predict sigma points, the state, and the state covariance matrix.
   */
-  /*****************************************************************************
-   *  Generate Sigma Points
-   ****************************************************************************/
-   //create sigma point matrix
-   MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
-
-   //calculate square root of P
-   MatrixXd A = P_.llt().matrixL();
-
-   // Sigma point spreading parameter
-   lambda_ = 3 - n_x_; // optimal value as explained in lecture
-
-   //set first column of sigma point matrix
-   Xsig.col(0)  = x_;
-
-   //set remaining sigma points
-   for (int i = 0; i < n_x_; i++)
-   {
-      Xsig.col(i+1)     = x_ + sqrt(lambda_ + n_x_) * A.col(i);
-      Xsig.col(i+1+n_x_) = x_ - sqrt(lambda_ + n_x_) * A.col(i);
-   }
-
  /*****************************************************************************
-  *  Augment Sigma Points
+  *  Generate Augmented Sigma Points
   ****************************************************************************/
   //create augmented mean vector
    VectorXd x_aug = VectorXd(n_aug_);
@@ -240,13 +218,13 @@ void UKF::Prediction(double delta_t) {
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   {
     //extract values for better readability
-    double p_x      = Xsig_aug(0, i);
-    double p_y      = Xsig_aug(1, i);
-    double v        = Xsig_aug(2, i);
-    double yaw      = Xsig_aug(3, i);
-    double yawd     = Xsig_aug(4, i);
-    double nu_a     = Xsig_aug(5, i);
-    double nu_yawdd = Xsig_aug(6, i);
+    const double p_x      = Xsig_aug(0, i);
+    const double p_y      = Xsig_aug(1, i);
+    const double v        = Xsig_aug(2, i);
+    const double yaw      = Xsig_aug(3, i);
+    const double yawd     = Xsig_aug(4, i);
+    const double nu_a     = Xsig_aug(5, i);
+    const double nu_yawdd = Xsig_aug(6, i);
 
     //predicted state values
     double px_p, py_p;
@@ -393,10 +371,10 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
  for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 sigma points
 
    // extract values for better readibility
-   double p_x = Xsig_pred_(0,i);
-   double p_y = Xsig_pred_(1,i);
-   double v  = Xsig_pred_(2,i);
-   double yaw = Xsig_pred_(3,i);
+   const double p_x = Xsig_pred_(0,i);
+   const double p_y = Xsig_pred_(1,i);
+   const double v  = Xsig_pred_(2,i);
+   const double yaw = Xsig_pred_(3,i);
 
    double v1 = cos(yaw)*v;
    double v2 = sin(yaw)*v;
